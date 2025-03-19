@@ -1,22 +1,37 @@
 #include "lib/Error.hpp"
+#include "Error.hpp"
 #include <boost/stacktrace.hpp>
 #include <print>
 #include <sstream>
 
-namespace loxlang::error {
+namespace {
 
-void report(std::string_view msg) { std::println("{}", msg); }
-
-void assertError(std::string_view msg, std::string_view file,
-                 std::string_view line) {
-  std::println("\033[1;31m{}{}:\033[0m\033[31m", file, line);
-  std::println("{}", msg);
-
+void printStackTrace() {
   auto trace = boost::stacktrace::stacktrace();
   auto asText = std::ostringstream();
   asText << trace;
   std::print("{}", asText.str());
+}
+
+} // namespace
+
+void loxlang::error::report(std::string_view msg) { std::println("{}", msg); }
+
+void loxlang::error::assertError(std::string_view msg, std::string_view expr,
+                                 std::string_view file, std::size_t line) {
+  std::println("\033[1;31m{}:{}:\033[0m\033[31m", file, line);
+  std::println("{}", msg);
+  std::println("\t{}", expr);
+  printStackTrace();
   std::println("\033[0m");
 }
 
-} // namespace loxlang::error
+void loxlang::error::assertError(std::string_view msg, std::string_view left,
+                                 std::string_view op, std::string_view right,
+                                 std::string_view file, std::size_t line) {
+  std::println("\033[1;31m{}{}:\033[0m\033[31m", file, line);
+  std::println("{}", msg);
+  std::println("\t{} {} {}", left, op, right);
+  printStackTrace();
+  std::println("\033[0m");
+}
