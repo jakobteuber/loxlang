@@ -34,7 +34,7 @@ set(GENERATED_CPP)
 # Targets
 # ---------------------------------------------------------------------------
 add_library(lox STATIC ${LIB_CPP} ${GENERATED_CPP})
-target_link_libraries(lox Threads::Threads Boost::stacktrace_basic)
+target_link_libraries(lox Threads::Threads Boost::stacktrace_basic Boost::stacktrace_addr2line)
 target_compile_options(lox PRIVATE "-Werror")
 
 add_executable(loxlang ${TOOLS_CPP})
