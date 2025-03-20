@@ -6,6 +6,8 @@
 
 namespace {
 
+using namespace loxlang::scan;
+
 bool isDigit(char c) { return '0' <= c && c <= '9'; }
 bool isBlank(char c) { return std::isblank(static_cast<unsigned char>(c)); }
 bool isIdentStart(char c) {
@@ -15,17 +17,16 @@ bool isIdentPart(char c) {
   return c == '_' || std::isalnum(static_cast<unsigned char>(c));
 }
 
-loxlang::scan::Token::Type cmp(loxlang::scan::Token::Type type,
-                               std::string_view id, std::string_view actual) {
+Token::Type cmp(Token::Type type, std::string_view id,
+                std::string_view actual) {
   if (id == actual) {
     return type;
   } else {
-    return loxlang::scan::Token::Type::Ident;
+    return Token::Type::Ident;
   }
 }
 
-loxlang::scan::Token::Type potentialKeyword(std::string_view identifier) {
-  using loxlang::scan::Token;
+Token::Type potentialKeyword(std::string_view identifier) {
   switch (identifier.size()) {
   case 2:
     switch (identifier[0]) {
@@ -53,7 +54,7 @@ loxlang::scan::Token::Type potentialKeyword(std::string_view identifier) {
     }
     break;
   case 5:
-    switch (identifier[1]) {
+    switch (identifier[0]) {
     case 'c': return cmp(Token::Type::Class, "class", identifier);
     case 'f': return cmp(Token::Type::False, "false", identifier);
     case 'p': return cmp(Token::Type::Print, "print", identifier);
@@ -62,8 +63,7 @@ loxlang::scan::Token::Type potentialKeyword(std::string_view identifier) {
     default: return Token::Type::Ident;
     }
     break;
-  case 6: return cmp(Token::Type::Return, "retrun", identifier);
-
+  case 6: return cmp(Token::Type::Return, "return", identifier);
   default: return Token::Type::Ident;
   }
 }
