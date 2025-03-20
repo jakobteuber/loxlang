@@ -70,6 +70,12 @@ struct Stmt : public Ast {
 """)
 
 for e in exprs:
+    print(f"struct {className(e)};")
+for s in statements:
+    print(f"struct {className(s)};")
+
+
+for e in exprs:
     print("struct", className(e), ": public Expr {")
     print(f"~{className(e)}() override = default;")
     print("AstType type() const override ",
@@ -102,10 +108,10 @@ print("""
 """)
 for e in exprs:
     print(
-        f"case AstType::{className(e)}Expr: return visit{className(e)}Expr(static_cast<{className(e)}*>(this));")
+        f"case AstType::{className(e)}Expr: return visit{className(e)}Expr(static_cast<{className(e)}*>(ast));")
 for s in statements:
     print(
-        f"case AstType::{className(s)}Stmt: return visit{className(s)}Stmt(static_cast<{className(s)}*>(this));")
+        f"case AstType::{className(s)}Stmt: return visit{className(s)}Stmt(static_cast<{className(s)}*>(ast));")
 print("""
     default: lox_fail("bad ast type");
   }
