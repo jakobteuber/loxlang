@@ -208,8 +208,7 @@ loxlang::scan::Token loxlang::scan::Scanner::identifierOrKeyword() {
   }
 
   Token t = token(Token::Type::Ident);
-  std::string_view name = program.part(t.start, t.length);
-  t.type = potentialKeyword(name);
+  t.type = potentialKeyword(t.text);
   return t;
 }
 
@@ -254,7 +253,8 @@ bool loxlang::scan::Scanner::advanceIf(char expected) {
 }
 
 loxlang::scan::Token loxlang::scan::Scanner::token(Token::Type type) {
-  Token t = Token{type, start, current - start};
+  std::string_view text = program.part(start, current - start);
+  Token t = Token(type, text);
   start = current;
   return t;
 }
@@ -263,7 +263,7 @@ void loxlang::scan::Scanner::discard() { token(Token::Type::Err); }
 
 loxlang::scan::Token loxlang::scan::Scanner::error(std::string_view msg) {
   Token t = token(Token::Type::Err);
-  program.error(msg, t.start, t.start + t.length);
+  program.error(msg, t.text);
   return t;
 }
 

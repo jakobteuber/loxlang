@@ -2,6 +2,7 @@
 
 #include "lib/Program.hpp"
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace loxlang::scan {
@@ -20,8 +21,7 @@ struct Token {
     //clang-format on
   };
   Type type;
-  std::size_t start;
-  std::size_t length;
+  std::string_view text;
 
   static std::string typeName(Type type);
 };

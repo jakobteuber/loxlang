@@ -61,7 +61,7 @@ void loxlang::run(std::string_view filename, std::string_view text) {
   Scanner scanner = Scanner(program);
   for (Token t = scanner.next(); t.type != Token::Type::Eof;
        t = scanner.next()) {
-    std::string_view text = program.part(t.start, t.length);
-    std::println("Token({}, {}, {})", Token::typeName(t.type), text, t.length);
+    std::println("Token({}, {}, {})", Token::typeName(t.type), t.text,
+                 t.text.size());
   }
 }

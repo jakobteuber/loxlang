@@ -8,27 +8,25 @@
 
 namespace {
 
-std::vector<std::size_t> findLines(std::string_view text) {
-  std::size_t offset = 0;
-  std::vector<std::size_t> lineLoc;
-  lineLoc.push_back(0);
-  for (char c : text) {
+std::vector<const char *> findLines(std::string_view text) {
+  std::vector<const char *> lineLoc;
+  lineLoc.push_back(text.begin());
+  for (const char &c : text) {
     if (c == '\n') {
-      lineLoc.push_back(offset);
+      lineLoc.push_back(&c);
     }
-    offset++;
   }
-  lineLoc.push_back(std::string_view::npos);
+  lineLoc.push_back(text.end());
 
   return lineLoc;
 }
 
 struct Line {
-  std::size_t charOffset;
+  const char *charOffset;
   std::size_t lineNumber;
 };
 
-Line findLine(std::span<std::size_t> lineLoc, std::size_t offset) {
+Line findLine(std::span<const char *> lineLoc, const char *offset) {
   auto lower = std::ranges::lower_bound(lineLoc, offset);
   if (lower != lineLoc.begin()) {
     --lower;
@@ -37,20 +35,21 @@ Line findLine(std::span<std::size_t> lineLoc, std::size_t offset) {
   std::ptrdiff_t index = lower - lineLoc.begin();
   lox_assert(index >= 0, "line index is non-negative");
   std::size_t lineNo = static_cast<std::size_t>(index);
-  std::size_t lineOffset = (lineNo < lineLoc.size()) ? lineLoc[lineNo] : 0;
+  const char *lineOffset = (lineNo < lineLoc.size()) ? lineLoc[lineNo] : 0;
   return Line{lineOffset, lineNo};
 }
 
 std::string_view extractLine(std::string_view text,
-                             std::span<std::size_t> lineLoc,
+                             std::span<const char *> lineLoc,
                              std::size_t lineNo) {
-  std::size_t start = (lineNo < lineLoc.size()) ? lineLoc[lineNo] : 0;
-  std::size_t end = (lineNo + 1 < lineLoc.size()) ? lineLoc[lineNo + 1]
-                                                  : std::string_view::npos;
-  if (start >= text.size()) {
+  const char *start =
+      (lineNo < lineLoc.size()) ? lineLoc[lineNo] : text.begin();
+  const char *end =
+      (lineNo + 1 < lineLoc.size()) ? lineLoc[lineNo + 1] : text.end();
+  if (start >= text.end()) {
     return "End Of File";
   }
-  return text.substr(start, end - start);
+  return std::string_view(start, end);
 }
 
 void repeatPrint(char c, std::size_t n) {
@@ -62,22 +61,22 @@ void repeatPrint(char c, std::size_t n) {
 } // namespace
 
 void loxlang::Program::error(std::string_view msg, std::size_t charOffset) {
-  error(msg, charOffset, charOffset + 1);
+  error(msg, part(charOffset, 1));
 }
 
-void loxlang::Program::error(std::string_view msg, std::size_t startOffset,
-                             std::size_t endOffset) {
+void loxlang::Program::error(std::string_view msg, std::string_view tokenText) {
+
   if (lines.empty()) {
     lines = findLines(text);
   }
-  Line startLine = findLine(lines, startOffset);
-  Line endLine = findLine(lines, endOffset);
+  Line startLine = findLine(lines, tokenText.begin());
+  Line endLine = findLine(lines, tokenText.end());
 
   std::println("\033[1m{}:{}:\033[0m {}", filename, startLine.lineNumber, msg);
-  std::size_t startCol = startOffset - startLine.charOffset;
-  std::size_t endCol = endOffset - endLine.charOffset;
+  std::ptrdiff_t startCol = tokenText.begin() - startLine.charOffset;
+  std::ptrdiff_t endCol = tokenText.end() - endLine.charOffset;
 
-  constexpr std::size_t maxColumnCount = 255;
+  constexpr std::ptrdiff_t maxColumnCount = 255;
 
   if (startLine.lineNumber == endLine.lineNumber) {
     std::string_view startText = extractLine(text, lines, startLine.lineNumber);
