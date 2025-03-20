@@ -32,6 +32,10 @@ def className(spec: str): return spec.split("@")[0].strip()
 def fields(spec: str): return spec.split("@")[1].split(",")
 
 
+def fieldNames(spec: str): return map(
+    lambda v: v.strip().split(" ")[1], fields(spec))
+
+
 print("""
 #pragma once
 
@@ -77,6 +81,9 @@ for s in statements:
 
 for e in exprs:
     print("struct", className(e), ": public Expr {")
+    print(className(e), "(", ",".join(fields(e)), ") : ")
+    print(", ".join(n + "{std::move(" + n + ")}" for n in fieldNames(e)))
+    print("{ }")
     print(f"~{className(e)}() override = default;")
     print("AstType type() const override ",
           "{ return AstType::", f"{className(e)}Expr", "; }")
@@ -86,6 +93,9 @@ for e in exprs:
 
 for s in statements:
     print("struct", className(s), ": public Stmt {")
+    print(className(s), "(", ",".join(fields(s)), ") : ")
+    print(", ".join(n + "{std::move(" + n + ")}" for n in fieldNames(s)))
+    print("{ }")
     print(f"~{className(s)}() override = default;")
     print("AstType type() const override ",
           "{ return AstType::", f"{className(s)}Stmt", "; }")
