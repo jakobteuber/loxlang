@@ -11,7 +11,7 @@ exprs = [
     "Set      @ std::unique_ptr<Expr> object, scan::Token name, std::unique_ptr<Expr> value",
     "Super    @ scan::Token keyword, scan::Token method",
     "This     @ scan::Token keyword",
-    "Unary    @ scan::Token op, scan::Token right",
+    "Unary    @ scan::Token op, std::unique_ptr<Expr> right",
     "Variable @ scan::Token name"
 ]
 
@@ -83,7 +83,7 @@ for s in statements:
     print(f"~{className(s)}() override = default;")
     print("AstType type() const override ",
           "{ return AstType::", f"{className(s)}Stmt", "; }")
-    for v in fields(e):
+    for v in fields(s):
         print(v, ";")
     print("};")
 
@@ -97,6 +97,7 @@ for s in statements:
 
 print("""
   R accept(Ast* ast) {
+    lox_assert_neq(ast, nullptr, "Ast node should not be nullptr");
     switch (ast->type()) {
 """)
 for e in exprs:

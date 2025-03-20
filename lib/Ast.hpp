@@ -112,7 +112,7 @@ struct Unary : public Expr {
   ~Unary() override = default;
   AstType type() const override { return AstType::UnaryExpr; }
   scan::Token op;
-  scan::Token right;
+  std::unique_ptr<Expr> right;
 };
 struct Variable : public Expr {
   ~Variable() override = default;
@@ -122,47 +122,56 @@ struct Variable : public Expr {
 struct Block : public Stmt {
   ~Block() override = default;
   AstType type() const override { return AstType::BlockStmt; }
-  scan::Token name;
+  std::vector<std::unique_ptr<Stmt>> statements;
 };
 struct Class : public Stmt {
   ~Class() override = default;
   AstType type() const override { return AstType::ClassStmt; }
   scan::Token name;
+  std::unique_ptr<Variable> superclass;
+  std::vector<std::unique_ptr<Function>> methods;
 };
 struct Expression : public Stmt {
   ~Expression() override = default;
   AstType type() const override { return AstType::ExpressionStmt; }
-  scan::Token name;
+  std::unique_ptr<Expr> expression;
 };
 struct Function : public Stmt {
   ~Function() override = default;
   AstType type() const override { return AstType::FunctionStmt; }
   scan::Token name;
+  std::vector<scan::Token> params;
+  std::vector<std::unique_ptr<Stmt>> body;
 };
 struct If : public Stmt {
   ~If() override = default;
   AstType type() const override { return AstType::IfStmt; }
-  scan::Token name;
+  std::unique_ptr<Expr> condition;
+  std::unique_ptr<Stmt> thenBranch;
+  std::unique_ptr<Stmt> elseBranch;
 };
 struct Print : public Stmt {
   ~Print() override = default;
   AstType type() const override { return AstType::PrintStmt; }
-  scan::Token name;
+  std::unique_ptr<Expr> expression;
 };
 struct Return : public Stmt {
   ~Return() override = default;
   AstType type() const override { return AstType::ReturnStmt; }
-  scan::Token name;
+  scan::Token keyword;
+  std::unique_ptr<Expr> value;
 };
 struct Var : public Stmt {
   ~Var() override = default;
   AstType type() const override { return AstType::VarStmt; }
   scan::Token name;
+  std::unique_ptr<Expr> initializer;
 };
 struct While : public Stmt {
   ~While() override = default;
   AstType type() const override { return AstType::WhileStmt; }
-  scan::Token name;
+  std::unique_ptr<Expr> condition;
+  std::unique_ptr<Stmt> body;
 };
 template <typename R> struct Visitor {
   virtual R visitAssignExpr(Assign *expr) = 0;
@@ -188,6 +197,7 @@ template <typename R> struct Visitor {
   virtual R visitWhileStmt(While *stmt) = 0;
 
   R accept(Ast *ast) {
+    lox_assert_neq(ast, nullptr, "Ast node should not be nullptr");
     switch (ast->type()) {
 
     case AstType::AssignExpr:
