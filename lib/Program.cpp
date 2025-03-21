@@ -65,7 +65,7 @@ void loxlang::Program::error(std::string_view msg, std::size_t charOffset) {
 }
 
 void loxlang::Program::error(std::string_view msg, std::string_view tokenText) {
-
+  hadErr = true;
   if (lines.empty()) {
     lines = findLines(text);
   }
