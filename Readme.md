@@ -3,6 +3,9 @@ Loxlang
 
 This is a C++ implementation of an interpreter for the Lox programming language, following the book [*Crafting Interpreters*](https://craftinginterpreters.com/) by Robert Nystrom.
 
+For Nystrom’s implementation, see <https://github.com/munificent/craftinginterpreters>
+For other Lox implementations, see <https://github.com/munificent/craftinginterpreters/wiki/Lox-Implementations>
+
 Building & Running
 ------------------
 

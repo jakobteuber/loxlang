@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="300"
+   height="300"
+   viewBox="0 0 300 300"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   sodipodi:docname="logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="2.61"
+     inkscape:cx="132.37548"
+     inkscape:cy="159.00383"
+     inkscape:window-width="1920"
+     inkscape:window-height="1131"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="fill:#d2d2d2;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.501923"
+       id="path1"
+       cx="150.38312"
+       cy="150.29886"
+       r="149.61557" />
+    <path
+       style="font-size:533.333px;font-family:'Latin Modern Mono Prop';-inkscape-font-specification:'Latin Modern Mono Prop';fill:#0070ff;fill-rule:evenodd;stroke-width:0.5"
+       d="m 182.63908,172.24061 c 0,-11.73334 0,-44.8 -28.26667,-44.8 -16,0 -26.66667,12.26666 -26.66667,26.66666 0,2.66667 0,21.33334 22.4,26.13334 -2.13333,26.13333 -16.53333,41.06666 -22.4,47.46666 -3.2,3.2 -4.8,6.4 -4.8,10.13333 0,8.53334 8.53334,17.06667 17.06667,17.06667 11.73333,0 42.66667,-31.46667 42.66667,-82.66666 z"
+       id="path2" />
+    <path
+       style="font-size:533.333px;font-family:'Latin Modern Mono Prop';-inkscape-font-specification:'Latin Modern Mono Prop';fill:#0070ff;fill-rule:evenodd;stroke-width:0.5"
+       d="m 181.03908,73.57395 c 0,-14.93333 -11.73334,-26.666666 -26.66667,-26.666666 -14.93333,0 -26.66667,11.733336 -26.66667,26.666666 0,14.93333 11.73334,26.66666 26.66667,26.66666 14.93333,0 26.66667,-11.73333 26.66667,-26.66666 z"
+       id="text2" />
+  </g>
+</svg>
