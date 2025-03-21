@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOXLANG_LIB_ERROR_HPP
+#define LOXLANG_LIB_ERROR_HPP
 
 #include <cstddef>
 #include <string_view>
@@ -32,3 +33,5 @@ void assertError(std::string_view msg, std::string_view left,
   loxlang::error::assertError(msg, "failure", __FILE__, __LINE__)
 
 } // namespace loxlang::error
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOXLANG_LIB_SCANNER_HPP
+#define LOXLANG_LIB_SCANNER_HPP
 
 #include "lib/Program.hpp"
 #include <string>
@@ -54,3 +55,5 @@ private:
 };
 
 } // namespace loxlang::scan
+
+#endif

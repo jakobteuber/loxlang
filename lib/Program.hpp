@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOXLANG_LIB_PROGRAM_HPP
+#define LOXLANG_LIB_PROGRAM_HPP
 
 #include <cstdint>
 #include <string_view>
@@ -17,10 +18,15 @@ struct Program {
     return text.substr(start, length);
   }
 
+  bool hadError() const { return hadErr; }
+
 private:
   std::string_view filename;
   std::string_view text;
   std::vector<const char *> lines;
+  bool hadErr = false;
 };
 
 } // namespace loxlang
+
+#endif

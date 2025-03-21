@@ -1,5 +1,6 @@
 
-#pragma once
+#ifndef LOXLANG_LIB_AST_HPP
+#define LOXLANG_LIB_AST_HPP
 
 #include "lib/Error.hpp"
 #include "lib/Scanner.hpp"
@@ -308,3 +309,5 @@ template <typename R> struct Visitor {
 };
 
 } // namespace loxlang::ast
+
+#endif
