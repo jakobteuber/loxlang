@@ -8,7 +8,13 @@
 
 namespace loxlang::scan {
 
+/**
+ * @brief Representation of a program token.
+ */
 struct Token {
+  /**
+   * @brief Token Types for Lox
+   */
   enum class Type {
     // clang-format off
     LPar, RPar, LBrace, RBrace,
@@ -21,12 +27,27 @@ struct Token {
     Eof, Err
     //clang-format on
   };
+
+  /**
+   * @brief The token type
+   */
   Type type;
+
+  /**
+   * @brief A view into the program text that is represented by this token.
+   */
   std::string_view text;
 
+  /**
+   * @brief Retrieves the name of a program type
+   */
   static std::string typeName(Type type);
 };
 
+
+/**
+ * @brief The Scanner or Tokenizer for Lox
+ */
 struct Scanner {
   Scanner(Program &p) : program{p} {}
 
