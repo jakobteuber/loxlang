@@ -6,7 +6,7 @@
 using namespace loxlang::ast;
 using namespace loxlang::util;
 
-std::string astTypeName(AstType type) {
+std::string loxlang::ast::astTypeName(AstType type) {
   std::string asText = R"ENUM(
     AssignExpr,
 BinaryExpr,
@@ -193,3 +193,7 @@ std::string Ast::stringify() {
   v.accept(this);
   return v.text.str();
 }
+
+Ast::~Ast() = default;
+Expr::~Expr() = default;
+Stmt::~Stmt() = default;

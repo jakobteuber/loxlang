@@ -9,7 +9,7 @@
 
 namespace loxlang::ast {
 
-enum AstType {
+enum class AstType {
   AssignExpr,
   BinaryExpr,
   CallExpr,
@@ -39,58 +39,41 @@ struct Ast {
   virtual ~Ast() = 0;
   std::string stringify();
 };
+
 struct Expr : public Ast {
-  virtual AstType type() const = 0;
-  virtual ~Expr() = 0;
+  virtual AstType type() const override = 0;
+  virtual ~Expr() override = 0;
 };
+
 struct Stmt : public Ast {
   virtual AstType type() const override = 0;
   virtual ~Stmt() override = 0;
 };
 
-struct Assign;
-struct Binary;
-struct Call;
-struct Get;
-struct Grouping;
-struct Literal;
-struct Logical;
-struct Set;
-struct Super;
-struct This;
-struct Unary;
-struct Variable;
-struct Block;
-struct Class;
-struct Expression;
-struct Function;
-struct If;
-struct Print;
-struct Return;
-struct Var;
-struct While;
 struct Assign : public Expr {
   Assign(scan::Token name, std::unique_ptr<Expr> value)
-      : name{std::move(name)}, value{std::move(value)} {}
+      : name{name}, value{std::move(value)} {}
   ~Assign() override = default;
   AstType type() const override { return AstType::AssignExpr; }
   scan::Token name;
   std::unique_ptr<Expr> value;
 };
+
 struct Binary : public Expr {
   Binary(std::unique_ptr<Expr> left, scan::Token op,
          std::unique_ptr<Expr> right)
-      : left{std::move(left)}, op{std::move(op)}, right{std::move(right)} {}
+      : left{std::move(left)}, op{op}, right{std::move(right)} {}
   ~Binary() override = default;
   AstType type() const override { return AstType::BinaryExpr; }
   std::unique_ptr<Expr> left;
   scan::Token op;
   std::unique_ptr<Expr> right;
 };
+
 struct Call : public Expr {
   Call(std::unique_ptr<Expr> callee, scan::Token paren,
        std::vector<std::unique_ptr<Expr>> arguments)
-      : callee{std::move(callee)}, paren{std::move(paren)},
+      : callee{std::move(callee)}, paren{paren},
         arguments{std::move(arguments)} {}
   ~Call() override = default;
   AstType type() const override { return AstType::CallExpr; }
@@ -98,14 +81,16 @@ struct Call : public Expr {
   scan::Token paren;
   std::vector<std::unique_ptr<Expr>> arguments;
 };
+
 struct Get : public Expr {
   Get(std::unique_ptr<Expr> object, scan::Token name)
-      : object{std::move(object)}, name{std::move(name)} {}
+      : object{std::move(object)}, name{name} {}
   ~Get() override = default;
   AstType type() const override { return AstType::GetExpr; }
   std::unique_ptr<Expr> object;
   scan::Token name;
 };
+
 struct Grouping : public Expr {
   Grouping(std::unique_ptr<Expr> expression)
       : expression{std::move(expression)} {}
@@ -113,61 +98,68 @@ struct Grouping : public Expr {
   AstType type() const override { return AstType::GroupingExpr; }
   std::unique_ptr<Expr> expression;
 };
+
 struct Literal : public Expr {
-  Literal(void *value) : value{std::move(value)} {}
+  Literal(void *value) : value{value} {}
   ~Literal() override = default;
   AstType type() const override { return AstType::LiteralExpr; }
   void *value;
 };
+
 struct Logical : public Expr {
   Logical(std::unique_ptr<Expr> left, scan::Token op,
           std::unique_ptr<Expr> right)
-      : left{std::move(left)}, op{std::move(op)}, right{std::move(right)} {}
+      : left{std::move(left)}, op{op}, right{std::move(right)} {}
   ~Logical() override = default;
   AstType type() const override { return AstType::LogicalExpr; }
   std::unique_ptr<Expr> left;
   scan::Token op;
   std::unique_ptr<Expr> right;
 };
+
 struct Set : public Expr {
   Set(std::unique_ptr<Expr> object, scan::Token name,
       std::unique_ptr<Expr> value)
-      : object{std::move(object)}, name{std::move(name)},
-        value{std::move(value)} {}
+      : object{std::move(object)}, name{name}, value{std::move(value)} {}
   ~Set() override = default;
   AstType type() const override { return AstType::SetExpr; }
   std::unique_ptr<Expr> object;
   scan::Token name;
   std::unique_ptr<Expr> value;
 };
+
 struct Super : public Expr {
   Super(scan::Token keyword, scan::Token method)
-      : keyword{std::move(keyword)}, method{std::move(method)} {}
+      : keyword{keyword}, method{method} {}
   ~Super() override = default;
   AstType type() const override { return AstType::SuperExpr; }
   scan::Token keyword;
   scan::Token method;
 };
+
 struct This : public Expr {
-  This(scan::Token keyword) : keyword{std::move(keyword)} {}
+  This(scan::Token keyword) : keyword{keyword} {}
   ~This() override = default;
   AstType type() const override { return AstType::ThisExpr; }
   scan::Token keyword;
 };
+
 struct Unary : public Expr {
   Unary(scan::Token op, std::unique_ptr<Expr> right)
-      : op{std::move(op)}, right{std::move(right)} {}
+      : op{op}, right{std::move(right)} {}
   ~Unary() override = default;
   AstType type() const override { return AstType::UnaryExpr; }
   scan::Token op;
   std::unique_ptr<Expr> right;
 };
+
 struct Variable : public Expr {
-  Variable(scan::Token name) : name{std::move(name)} {}
+  Variable(scan::Token name) : name{name} {}
   ~Variable() override = default;
   AstType type() const override { return AstType::VariableExpr; }
   scan::Token name;
 };
+
 struct Block : public Stmt {
   Block(std::vector<std::unique_ptr<Stmt>> statements)
       : statements{std::move(statements)} {}
@@ -175,17 +167,7 @@ struct Block : public Stmt {
   AstType type() const override { return AstType::BlockStmt; }
   std::vector<std::unique_ptr<Stmt>> statements;
 };
-struct Class : public Stmt {
-  Class(scan::Token name, std::unique_ptr<Variable> superclass,
-        std::vector<std::unique_ptr<Function>> methods)
-      : name{std::move(name)}, superclass{std::move(superclass)},
-        methods{std::move(methods)} {}
-  ~Class() override = default;
-  AstType type() const override { return AstType::ClassStmt; }
-  scan::Token name;
-  std::unique_ptr<Variable> superclass;
-  std::vector<std::unique_ptr<Function>> methods;
-};
+
 struct Expression : public Stmt {
   Expression(std::unique_ptr<Expr> expression)
       : expression{std::move(expression)} {}
@@ -196,8 +178,7 @@ struct Expression : public Stmt {
 struct Function : public Stmt {
   Function(scan::Token name, std::vector<scan::Token> params,
            std::vector<std::unique_ptr<Stmt>> body)
-      : name{std::move(name)}, params{std::move(params)},
-        body{std::move(body)} {}
+      : name{name}, params{params}, body{std::move(body)} {}
   ~Function() override = default;
   AstType type() const override { return AstType::FunctionStmt; }
   scan::Token name;
@@ -223,7 +204,7 @@ struct Print : public Stmt {
 };
 struct Return : public Stmt {
   Return(scan::Token keyword, std::unique_ptr<Expr> value)
-      : keyword{std::move(keyword)}, value{std::move(value)} {}
+      : keyword{keyword}, value{std::move(value)} {}
   ~Return() override = default;
   AstType type() const override { return AstType::ReturnStmt; }
   scan::Token keyword;
@@ -231,12 +212,13 @@ struct Return : public Stmt {
 };
 struct Var : public Stmt {
   Var(scan::Token name, std::unique_ptr<Expr> initializer)
-      : name{std::move(name)}, initializer{std::move(initializer)} {}
+      : name{name}, initializer{std::move(initializer)} {}
   ~Var() override = default;
   AstType type() const override { return AstType::VarStmt; }
   scan::Token name;
   std::unique_ptr<Expr> initializer;
 };
+
 struct While : public Stmt {
   While(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body)
       : condition{std::move(condition)}, body{std::move(body)} {}
@@ -245,6 +227,19 @@ struct While : public Stmt {
   std::unique_ptr<Expr> condition;
   std::unique_ptr<Stmt> body;
 };
+
+struct Class : public Stmt {
+  Class(scan::Token name, std::unique_ptr<Variable> superclass,
+        std::vector<std::unique_ptr<Function>> methods)
+      : name{name}, superclass{std::move(superclass)},
+        methods{std::move(methods)} {}
+  ~Class() override = default;
+  AstType type() const override { return AstType::ClassStmt; }
+  scan::Token name;
+  std::unique_ptr<Variable> superclass;
+  std::vector<std::unique_ptr<Function>> methods;
+};
+
 template <typename R> struct Visitor {
   virtual R visitAssignExpr(Assign *expr) = 0;
   virtual R visitBinaryExpr(Binary *expr) = 0;
