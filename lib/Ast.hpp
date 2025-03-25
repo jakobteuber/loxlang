@@ -10,7 +10,7 @@
 
 namespace loxlang::ast {
 
-enum class AstType {
+enum class AstType : std::uint8_t {
   AssignExpr,
   BinaryExpr,
   CallExpr,
@@ -82,7 +82,7 @@ struct Get : public Ast {
 };
 
 struct Grouping : public Ast {
-  Grouping(std::unique_ptr<Ast> expression)
+  explicit Grouping(std::unique_ptr<Ast> expression)
       : expression{std::move(expression)} {}
   ~Grouping() override = default;
   AstType type() const override { return AstType::GroupingExpr; }
@@ -90,7 +90,7 @@ struct Grouping : public Ast {
 };
 
 struct Literal : public Ast {
-  Literal(Value value) : value{value} {}
+  explicit Literal(Value value) : value{std::move(value)} {}
   ~Literal() override = default;
   AstType type() const override { return AstType::LiteralExpr; }
   Value value;
@@ -126,7 +126,7 @@ struct Super : public Ast {
 };
 
 struct This : public Ast {
-  This(scan::Token keyword) : keyword{keyword} {}
+  explicit This(scan::Token keyword) : keyword{keyword} {}
   ~This() override = default;
   AstType type() const override { return AstType::ThisExpr; }
   scan::Token keyword;
@@ -142,14 +142,14 @@ struct Unary : public Ast {
 };
 
 struct Variable : public Ast {
-  Variable(scan::Token name) : name{name} {}
+  explicit Variable(scan::Token name) : name{name} {}
   ~Variable() override = default;
   AstType type() const override { return AstType::VariableExpr; }
   scan::Token name;
 };
 
 struct Block : public Ast {
-  Block(std::vector<std::unique_ptr<Ast>> statements)
+  explicit Block(std::vector<std::unique_ptr<Ast>> statements)
       : statements{std::move(statements)} {}
   ~Block() override = default;
   AstType type() const override { return AstType::BlockStmt; }
@@ -157,7 +157,7 @@ struct Block : public Ast {
 };
 
 struct Expression : public Ast {
-  Expression(std::unique_ptr<Ast> expression)
+  explicit Expression(std::unique_ptr<Ast> expression)
       : expression{std::move(expression)} {}
   ~Expression() override = default;
   AstType type() const override { return AstType::ExpressionStmt; }
@@ -166,7 +166,7 @@ struct Expression : public Ast {
 struct Function : public Ast {
   Function(scan::Token name, std::vector<scan::Token> params,
            std::vector<std::unique_ptr<Ast>> body)
-      : name{name}, params{params}, body{std::move(body)} {}
+      : name{name}, params{std::move(params)}, body{std::move(body)} {}
   ~Function() override = default;
   AstType type() const override { return AstType::FunctionStmt; }
   scan::Token name;
@@ -185,7 +185,8 @@ struct If : public Ast {
   std::unique_ptr<Ast> elseBranch;
 };
 struct Print : public Ast {
-  Print(std::unique_ptr<Ast> expression) : expression{std::move(expression)} {}
+  explicit Print(std::unique_ptr<Ast> expression)
+      : expression{std::move(expression)} {}
   ~Print() override = default;
   AstType type() const override { return AstType::PrintStmt; }
   std::unique_ptr<Ast> expression;

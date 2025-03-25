@@ -13,7 +13,7 @@ class Object {};
 
 class Value {
 public:
-  enum class Type { Nil, Pointer, Number, String, Boolean };
+  enum class Type : std::uint8_t { Nil, Pointer, Number, String, Boolean };
 
   Value() : v(std::monostate()) {}
   Value(Object *ptr) : v{ptr} {}

@@ -15,7 +15,7 @@ struct Token {
   /**
    * @brief Token Types for Lox
    */
-  enum class Type {
+  enum class Type : std::uint8_t {
     // clang-format off
     LPar, RPar, LBrace, RBrace,
     Comma, Dot, Minus, Plus, SemiColon, Slash, Star,
@@ -49,7 +49,7 @@ struct Token {
  * @brief The Scanner or Tokenizer for Lox
  */
 struct Scanner {
-  Scanner(Program &p) : program{p} {}
+  explicit Scanner(Program &p) : program{p} {}
 
   Token next();
 

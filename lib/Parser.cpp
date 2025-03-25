@@ -123,7 +123,7 @@ void Parser::errorPanic(Token source, std::string_view errorMsg) {
   throw ParserPanic();
 }
 
-enum class BindingPower {
+enum class BindingPower : std::uint8_t {
   None,
   AssignRight,
   AssignLeft,
