@@ -1,4 +1,6 @@
 #include "lib/LoxLang.hpp"
+#include "lib/Ast.hpp"
+#include "lib/Parser.hpp"
 #include "lib/Program.hpp"
 #include "lib/Scanner.hpp"
 #include <filesystem>
@@ -6,6 +8,10 @@
 #include <iostream>
 #include <print>
 #include <string>
+
+using namespace loxlang::scan;
+using namespace loxlang::ast;
+using namespace loxlang::parse;
 
 namespace {
 
@@ -51,17 +57,16 @@ void loxlang::runFile(std::string_view name) {
 }
 
 void loxlang::run(std::string_view filename, std::string_view text) {
-  using namespace scan;
-
   if (text.empty()) {
     return;
   }
 
   auto program = Program(filename, text);
   Scanner scanner = Scanner(program);
-  for (Token t = scanner.next(); t.type != Token::Type::Eof;
-       t = scanner.next()) {
-    std::println("Token({}, {}, {})", Token::typeName(t.type), t.text,
-                 t.text.size());
+  std::unique_ptr<Ast> ast = parse::parse(program, scanner);
+  if (ast == nullptr) {
+    return;
   }
+
+  std::println("AST:\n{}\n", ast->stringify());
 }
