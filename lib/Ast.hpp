@@ -3,6 +3,7 @@
 #define LOXLANG_LIB_AST_HPP
 
 #include "lib/Error.hpp"
+#include "lib/Objects.hpp"
 #include "lib/Scanner.hpp"
 #include <memory>
 #include <string>
@@ -40,95 +41,82 @@ struct Ast {
   std::string stringify();
 };
 
-struct Expr : public Ast {
-  virtual AstType type() const override = 0;
-  virtual ~Expr() override = 0;
-};
-
-struct Stmt : public Ast {
-  virtual AstType type() const override = 0;
-  virtual ~Stmt() override = 0;
-};
-
-struct Assign : public Expr {
-  Assign(scan::Token name, std::unique_ptr<Expr> value)
+struct Assign : public Ast {
+  Assign(scan::Token name, std::unique_ptr<Ast> value)
       : name{name}, value{std::move(value)} {}
   ~Assign() override = default;
   AstType type() const override { return AstType::AssignExpr; }
   scan::Token name;
-  std::unique_ptr<Expr> value;
+  std::unique_ptr<Ast> value;
 };
 
-struct Binary : public Expr {
-  Binary(std::unique_ptr<Expr> left, scan::Token op,
-         std::unique_ptr<Expr> right)
+struct Binary : public Ast {
+  Binary(std::unique_ptr<Ast> left, scan::Token op, std::unique_ptr<Ast> right)
       : left{std::move(left)}, op{op}, right{std::move(right)} {}
   ~Binary() override = default;
   AstType type() const override { return AstType::BinaryExpr; }
-  std::unique_ptr<Expr> left;
+  std::unique_ptr<Ast> left;
   scan::Token op;
-  std::unique_ptr<Expr> right;
+  std::unique_ptr<Ast> right;
 };
 
-struct Call : public Expr {
-  Call(std::unique_ptr<Expr> callee, scan::Token paren,
-       std::vector<std::unique_ptr<Expr>> arguments)
+struct Call : public Ast {
+  Call(std::unique_ptr<Ast> callee, scan::Token paren,
+       std::vector<std::unique_ptr<Ast>> arguments)
       : callee{std::move(callee)}, paren{paren},
         arguments{std::move(arguments)} {}
   ~Call() override = default;
   AstType type() const override { return AstType::CallExpr; }
-  std::unique_ptr<Expr> callee;
+  std::unique_ptr<Ast> callee;
   scan::Token paren;
-  std::vector<std::unique_ptr<Expr>> arguments;
+  std::vector<std::unique_ptr<Ast>> arguments;
 };
 
-struct Get : public Expr {
-  Get(std::unique_ptr<Expr> object, scan::Token name)
+struct Get : public Ast {
+  Get(std::unique_ptr<Ast> object, scan::Token name)
       : object{std::move(object)}, name{name} {}
   ~Get() override = default;
   AstType type() const override { return AstType::GetExpr; }
-  std::unique_ptr<Expr> object;
+  std::unique_ptr<Ast> object;
   scan::Token name;
 };
 
-struct Grouping : public Expr {
-  Grouping(std::unique_ptr<Expr> expression)
+struct Grouping : public Ast {
+  Grouping(std::unique_ptr<Ast> expression)
       : expression{std::move(expression)} {}
   ~Grouping() override = default;
   AstType type() const override { return AstType::GroupingExpr; }
-  std::unique_ptr<Expr> expression;
+  std::unique_ptr<Ast> expression;
 };
 
-struct Literal : public Expr {
-  Literal(void *value) : value{value} {}
+struct Literal : public Ast {
+  Literal(Value value) : value{value} {}
   ~Literal() override = default;
   AstType type() const override { return AstType::LiteralExpr; }
-  void *value;
+  Value value;
 };
 
-struct Logical : public Expr {
-  Logical(std::unique_ptr<Expr> left, scan::Token op,
-          std::unique_ptr<Expr> right)
+struct Logical : public Ast {
+  Logical(std::unique_ptr<Ast> left, scan::Token op, std::unique_ptr<Ast> right)
       : left{std::move(left)}, op{op}, right{std::move(right)} {}
   ~Logical() override = default;
   AstType type() const override { return AstType::LogicalExpr; }
-  std::unique_ptr<Expr> left;
+  std::unique_ptr<Ast> left;
   scan::Token op;
-  std::unique_ptr<Expr> right;
+  std::unique_ptr<Ast> right;
 };
 
-struct Set : public Expr {
-  Set(std::unique_ptr<Expr> object, scan::Token name,
-      std::unique_ptr<Expr> value)
+struct Set : public Ast {
+  Set(std::unique_ptr<Ast> object, scan::Token name, std::unique_ptr<Ast> value)
       : object{std::move(object)}, name{name}, value{std::move(value)} {}
   ~Set() override = default;
   AstType type() const override { return AstType::SetExpr; }
-  std::unique_ptr<Expr> object;
+  std::unique_ptr<Ast> object;
   scan::Token name;
-  std::unique_ptr<Expr> value;
+  std::unique_ptr<Ast> value;
 };
 
-struct Super : public Expr {
+struct Super : public Ast {
   Super(scan::Token keyword, scan::Token method)
       : keyword{keyword}, method{method} {}
   ~Super() override = default;
@@ -137,98 +125,98 @@ struct Super : public Expr {
   scan::Token method;
 };
 
-struct This : public Expr {
+struct This : public Ast {
   This(scan::Token keyword) : keyword{keyword} {}
   ~This() override = default;
   AstType type() const override { return AstType::ThisExpr; }
   scan::Token keyword;
 };
 
-struct Unary : public Expr {
-  Unary(scan::Token op, std::unique_ptr<Expr> right)
+struct Unary : public Ast {
+  Unary(scan::Token op, std::unique_ptr<Ast> right)
       : op{op}, right{std::move(right)} {}
   ~Unary() override = default;
   AstType type() const override { return AstType::UnaryExpr; }
   scan::Token op;
-  std::unique_ptr<Expr> right;
+  std::unique_ptr<Ast> right;
 };
 
-struct Variable : public Expr {
+struct Variable : public Ast {
   Variable(scan::Token name) : name{name} {}
   ~Variable() override = default;
   AstType type() const override { return AstType::VariableExpr; }
   scan::Token name;
 };
 
-struct Block : public Stmt {
-  Block(std::vector<std::unique_ptr<Stmt>> statements)
+struct Block : public Ast {
+  Block(std::vector<std::unique_ptr<Ast>> statements)
       : statements{std::move(statements)} {}
   ~Block() override = default;
   AstType type() const override { return AstType::BlockStmt; }
-  std::vector<std::unique_ptr<Stmt>> statements;
+  std::vector<std::unique_ptr<Ast>> statements;
 };
 
-struct Expression : public Stmt {
-  Expression(std::unique_ptr<Expr> expression)
+struct Expression : public Ast {
+  Expression(std::unique_ptr<Ast> expression)
       : expression{std::move(expression)} {}
   ~Expression() override = default;
   AstType type() const override { return AstType::ExpressionStmt; }
-  std::unique_ptr<Expr> expression;
+  std::unique_ptr<Ast> expression;
 };
-struct Function : public Stmt {
+struct Function : public Ast {
   Function(scan::Token name, std::vector<scan::Token> params,
-           std::vector<std::unique_ptr<Stmt>> body)
+           std::vector<std::unique_ptr<Ast>> body)
       : name{name}, params{params}, body{std::move(body)} {}
   ~Function() override = default;
   AstType type() const override { return AstType::FunctionStmt; }
   scan::Token name;
   std::vector<scan::Token> params;
-  std::vector<std::unique_ptr<Stmt>> body;
+  std::vector<std::unique_ptr<Ast>> body;
 };
-struct If : public Stmt {
-  If(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> thenBranch,
-     std::unique_ptr<Stmt> elseBranch)
+struct If : public Ast {
+  If(std::unique_ptr<Ast> condition, std::unique_ptr<Ast> thenBranch,
+     std::unique_ptr<Ast> elseBranch)
       : condition{std::move(condition)}, thenBranch{std::move(thenBranch)},
         elseBranch{std::move(elseBranch)} {}
   ~If() override = default;
   AstType type() const override { return AstType::IfStmt; }
-  std::unique_ptr<Expr> condition;
-  std::unique_ptr<Stmt> thenBranch;
-  std::unique_ptr<Stmt> elseBranch;
+  std::unique_ptr<Ast> condition;
+  std::unique_ptr<Ast> thenBranch;
+  std::unique_ptr<Ast> elseBranch;
 };
-struct Print : public Stmt {
-  Print(std::unique_ptr<Expr> expression) : expression{std::move(expression)} {}
+struct Print : public Ast {
+  Print(std::unique_ptr<Ast> expression) : expression{std::move(expression)} {}
   ~Print() override = default;
   AstType type() const override { return AstType::PrintStmt; }
-  std::unique_ptr<Expr> expression;
+  std::unique_ptr<Ast> expression;
 };
-struct Return : public Stmt {
-  Return(scan::Token keyword, std::unique_ptr<Expr> value)
+struct Return : public Ast {
+  Return(scan::Token keyword, std::unique_ptr<Ast> value)
       : keyword{keyword}, value{std::move(value)} {}
   ~Return() override = default;
   AstType type() const override { return AstType::ReturnStmt; }
   scan::Token keyword;
-  std::unique_ptr<Expr> value;
+  std::unique_ptr<Ast> value;
 };
-struct Var : public Stmt {
-  Var(scan::Token name, std::unique_ptr<Expr> initializer)
+struct Var : public Ast {
+  Var(scan::Token name, std::unique_ptr<Ast> initializer)
       : name{name}, initializer{std::move(initializer)} {}
   ~Var() override = default;
   AstType type() const override { return AstType::VarStmt; }
   scan::Token name;
-  std::unique_ptr<Expr> initializer;
+  std::unique_ptr<Ast> initializer;
 };
 
-struct While : public Stmt {
-  While(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body)
+struct While : public Ast {
+  While(std::unique_ptr<Ast> condition, std::unique_ptr<Ast> body)
       : condition{std::move(condition)}, body{std::move(body)} {}
   ~While() override = default;
   AstType type() const override { return AstType::WhileStmt; }
-  std::unique_ptr<Expr> condition;
-  std::unique_ptr<Stmt> body;
+  std::unique_ptr<Ast> condition;
+  std::unique_ptr<Ast> body;
 };
 
-struct Class : public Stmt {
+struct Class : public Ast {
   Class(scan::Token name, std::unique_ptr<Variable> superclass,
         std::vector<std::unique_ptr<Function>> methods)
       : name{name}, superclass{std::move(superclass)},

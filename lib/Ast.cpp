@@ -76,9 +76,7 @@ struct StringifyVisitor : public Visitor<void> {
     text << ')';
   }
 
-  void visitLiteralExpr(Literal *expr) override {
-    text << "(literal " << expr->value << ')';
-  }
+  void visitLiteralExpr(Literal *expr) override { text << expr->value; }
 
   void visitLogicalExpr(Logical *expr) override {
     text << '(' << expr->op.text << ' ';
@@ -195,5 +193,3 @@ std::string Ast::stringify() {
 }
 
 Ast::~Ast() = default;
-Expr::~Expr() = default;
-Stmt::~Stmt() = default;
